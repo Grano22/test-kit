@@ -1,0 +1,10 @@
+parameters:
+    level: 8
+    # tmpDir: /tmp - that's the default option. The /tmp directory is used in the makefile to make the pipeline faster.
+    paths:
+        - src
+        - tests
+    ignoreErrors:
+        -
+            identifier: missingType.iterableValue
+            path: tests/*

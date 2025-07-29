@@ -1,0 +1,12 @@
+grumphp:
+    fixer:
+        enabled: true
+        fix_by_default: true
+    tasks:
+        phpcsfixer2:
+            config: .php-cs-fixer.dist.php
+#        phpstan:
+#            memory_limit: "-1"
+#       TODO: Enable when ready
+        phpunit:
+            always_execute: true
