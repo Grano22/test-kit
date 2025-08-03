@@ -1,15 +1,50 @@
+<div align="center">
+
 # PHP Test Kit Pack
+[![Latest Version](https://img.shields.io/packagist/v/grano22/test-kit.svg?style=flat-square)](https://packagist.org/packages/grano22/test-kit)
+[![Total Downloads](https://img.shields.io/packagist/dt/grano22/test-kit.svg?style=flat-square)](https://packagist.org/packages/grano22/test-kit)
+[![License](https://img.shields.io/packagist/l/grano22/test-kit.svg?style=flat-square)](LICENSE)
+[![PHP Version](https://img.shields.io/packagist/php-v/grano22/test-kit.svg?style=flat-square)](composer.json)
 
-**Motivation—** this package was introduced to reduce testing boilerplate and make it easier.
-Writing good quality test, readable ones, it's time-consuming process, especially when you don't have
-handy test tools.
+Reduce testing boilerplate and make your PHP tests more elegant and maintainable 🚀
 
-## Capabilities
+[Installation](#-installation) •
+[Features](#-features) •
+[Documentation](#-documentation) •
+[Contributing](#-contributing)
 
-### Operating on the array with an object navigation path
+</div>
+
+## 💡 Motivation
+
+Writing high-quality, readable tests can be time-consuming, especially without proper tooling.
+This package provides elegant solutions to common testing challenges, helping you write better tests with less boilerplate.
+
+## 🚀 Installation
+
+Install via Composer:
+
+```bash
+composer require grano22/test-kit --dev
+```
+
+## 📚 Documentation
+
+> 🚧 **Coming Soon!** I work on comprehensive documentation.
+
+In the meantime, you can:
+- Check the [examples](#-features) below
+- Browse the [source code](https://github.com/grano22/test-kit) for implementation details
+- [Open an issue](https://github.com/grano22/test-kit/issues) if you have questions
+
+## ✨ Features
+
+### 🎯 Operating on the array with an object navigation path
+
+#### Remove Elements
 
 Sometimes, in the test you need to strip something from an array (most likely dates that you don't control).
-It creates frequently a lot of boilerplate code in the private methods. Now you can use:
+It frequently creates a lot of boilerplate code in the private methods. Now you can use:
 
 ```php
 $structure = [
@@ -24,15 +59,23 @@ ReferenceNode::traverseByNodePath(
     $structure,
     '.items[*].description'
 );
-
-//  It will produce on the original array:
-//  [
-//      'items' => [
-//          [ 'title' => 'First' ],
-//          [ 'title' => 'Second' ]
-//      ]
-//  ]
 ```
+
+<details>
+
+<summary>📝 View Result</summary>
+```php
+[
+  'items' => [
+      [ 'title' => 'First' ],
+      [ 'title' => 'Second' ]
+  ]
+]
+```
+
+</details>
+
+#### Truncate Content
 
 Too long meaningful description? Don't worry, you can truncate it for assertion.
 
@@ -49,15 +92,21 @@ $mappedArray = ReferenceNode::mapByNodePath(
     $structure,
     '.items[*].description'
 );
-
-//  It will produce:
-//  [
-//      'items' => [
-//          [ 'title' => 'First', 'description' => 'First description ...' ],
-//          [ 'title' => 'Second', 'description' => 'Second description...' ]
-//      ]
-//  ]
 ```
+
+<details>
+
+<summary>📝 View Result</summary>
+```php
+[
+    'items' => [
+        [ 'title' => 'First', 'description' => 'First description ...' ],
+        [ 'title' => 'Second', 'description' => 'Second description...' ]
+    ]
+]
+```
+
+</details>
 
 You can also replace some content.
 
@@ -74,17 +123,23 @@ $mappedArray = ReferenceNode::mapByNodePath(
     $structure,
     '.items[*].description'
 );
-
-//  It will produce:
-//  [
-//      'items' => [
-//          [ 'title' => 'First', 'description' => 'First test.' ],
-//          [ 'title' => 'Second', 'description' => 'Second test.' ]
-//      ]
-//  ]
 ```
 
-### Test Doubles - CallSpy
+<details>
+
+<summary>📝 View Result</summary>
+```php
+[
+    'items' => [
+        [ 'title' => 'First', 'description' => 'First test.' ],
+        [ 'title' => 'Second', 'description' => 'Second test.' ]
+    ]
+]
+```
+
+</details>
+
+### 🕵️ Test Doubles - CallSpy
 
 Call spy is just a single test double (spy) to track your calls without using phpunit mocks.
 
@@ -108,3 +163,41 @@ $someClass->someMethod();
 
 // Will throw **AssertionFailedError**, because of Assert::fail
 ```
+
+### 🏗️ DDD Tactical Patterns
+
+Create a universal, in-memory repository in your kit/testDriver, use it in the unit test
+
+```php
+class ExampleEntity
+{
+    public function __construct(public readonly string $id)
+    {
+    }
+}
+
+$repository = InMemoryRepository::createOfType(ExampleEntity::class);
+
+$repository->add($entity);
+$repository->add(new ExampleEntity('2'));
+
+$foundEntity = $repository->findById('1');
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to:
+
+- 🐛 Report bugs
+- 💡 Suggest features
+- 🔧 Submit pull requests
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+<div align="center">
+Made with ❤️ for the PHP testing community
+</div>
