@@ -9,12 +9,17 @@ use LogicException;
 
 /**
  * @template T
+ * @phpstan-type RefAnyArray array<int|string, mixed>
  */
 final class ReferenceNode
 {
     /** @var T $value */
     private mixed $value;
+
+    /** @var array<non-empty-string|int> $path */
     private array $path;
+
+    /** @var RefAnyArray */
     private array $connectedOwner;
 
     /** @return T */
@@ -27,7 +32,10 @@ final class ReferenceNode
      * Maps nested data structures using JSON-like path syntax, and for each matched path yields a ReferenceNode
      *
      * @param callable(ReferenceNode<T> $node): void $walker
+     * @param array<int|string, mixed> $structuredData
      * @param string|SimplifiedJsonPath $objPath Object navigation path (e.g.: '[*].id'), use string to auto determine the most performant pathLike
+     *
+     * @return array<int|string, mixed>
      */
     public static function mapByNodePath(callable $walker, array $structuredData, string|SimplifiedJsonPath $objPath): array
     {
@@ -40,32 +48,31 @@ final class ReferenceNode
      * Traverses nested data structures using JSON-like path syntax, and for each matched path yields a ReferenceNode
      *
      * @param callable(ReferenceNode<T> $node): void $walker
+     * @param array<int|string, mixed> $structuredData
      * @param string|SimplifiedJsonPath $objPath Object navigation path (e.g.: '[*].id'), use string to auto determine the most performant pathLike
      */
-    public static function traverseByNodePath(callable $walker, array &$structuredData, string|SimplifiedJsonPath $objPath): void {
+    public static function traverseByNodePath(callable $walker, array &$structuredData, string|SimplifiedJsonPath $objPath): void
+    {
         foreach (self::yieldByNodePath($structuredData, $objPath) as $node) {
             $walker($node);
         }
     }
 
     /**
+     * @param array<int|string, mixed> $structuredData
      * @param string|SimplifiedJsonPath $objPath Object navigation path (e.g.: '[*].id'), use string to auto determine the most performant pathLike
      *
      * @return Generator<ReferenceNode<T>>
      */
-    public static function yieldByNodePath(array &$structuredData, string|SimplifiedJsonPath $objPath): Generator {
-        $segments = [];
-
+    public static function yieldByNodePath(array &$structuredData, string|SimplifiedJsonPath $objPath): Generator
+    {
         if (is_string($objPath)) {
             $objPath = SimplifiedJsonPath::fromString($objPath);
-            $segments = $objPath->toSegments();
-        }
-
-        if ($segments instanceof SimplifiedJsonPath) {
-            $segments = $segments->toSegments();
         }
 
         // TODO: Add support for more libraries such as JSONPath (RFC 9535), JSON Pointer (RFC-6901)
+
+        $segments = $objPath->toSegments();
 
         yield from self::processSegment(
             $structuredData,
@@ -74,11 +81,15 @@ final class ReferenceNode
         );
     }
 
+    /**
+     * @param array<non-empty-string|int> $path
+     * @param array<int|string, mixed> $owner
+     */
     public function __construct(mixed $value, array $path, array &$owner)
     {
-        $this->path = $path;
         $this->value = $value;
-        $this->connectedOwner =& $owner;
+        $this->path = $path;
+        $this->connectedOwner = & $owner;
     }
 
     public function remove(): void
@@ -107,8 +118,16 @@ final class ReferenceNode
         ) . $posFix;
     }
 
-    /** @return Generator<ReferenceNode<T>> */
-    private static function processSegment(&$currentRef, array $segments, array &$rootRef, array $traversedPath = []): Generator {
+    /**
+     * @param array<int|string, mixed> $currentRef
+     * @param array<non-empty-string|int> $segments
+     * @param array<int|string, mixed> $rootRef
+     * @param array<int|non-empty-string> $traversedPath
+     *
+     * @return Generator<ReferenceNode<T>>
+     */
+    private static function processSegment(mixed &$currentRef, array $segments, array &$rootRef, array $traversedPath = []): Generator
+    {
         if (empty($segments)) {
             yield new ReferenceNode($currentRef, $traversedPath, $rootRef);
 
@@ -118,6 +137,7 @@ final class ReferenceNode
         $segment = array_shift($segments);
 
         if ($segment === '*') {
+            /** @var non-empty-string $key */
             foreach ($currentRef as $key => $item) {
                 yield from self::processSegment($item, $segments, $rootRef, [ ...$traversedPath, $key ]);
             }
@@ -142,16 +162,18 @@ final class ReferenceNode
         yield from self::processSegment($nextData, $segments, $rootRef, $traversedPath);
     }
 
-    /** @return array{ parentRef: array, lastSegment: mixed } */
+    /**
+     * @return array{parentRef: array<int|string, mixed>, lastSegment: int|string}
+     */
     private function traverseByPath(): array
     {
-        $nodeRef =& $this->connectedOwner;
+        $nodeRef = & $this->connectedOwner;
 
         $i = 0;
         for (; $i < count($this->path) - 1; $i++) {
             $segment = $this->path[$i];
 
-            $nodeRef =& $nodeRef[$segment];
+            $nodeRef = & $nodeRef[$segment];
         }
         $lastSegment = $this->path[$i];
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Grano22\TestKit\Transformations;
 
 use InvalidArgumentException;
-use JetBrains\PhpStorm\Pure;
 
 class SimplifiedJsonPath
 {
@@ -36,8 +35,7 @@ class SimplifiedJsonPath
         $segments = [];
         $nextSegment = '';
 
-        for ($i = 0; $i < strlen($this->path); $i++)
-        {
+        for ($i = 0; $i < strlen($this->path); $i++) {
             $char = $this->path[$i];
 
             if (
@@ -67,7 +65,10 @@ class SimplifiedJsonPath
         return $segments;
     }
 
-    #[Pure]
+    /**
+     * @phpstan-pure
+     * @psalm-pure
+     */
     public static function validate(string $potentialJsonPath): bool
     {
         // TODO Refactor to make it more performant using data structures and patterns
@@ -92,8 +93,7 @@ class SimplifiedJsonPath
         $inTheParentheses = false;
         $inProperty = false;
         $inQuotes = false;
-        for ($i = $startPointer; $i < $inputSize; $i++)
-        {
+        for ($i = $startPointer; $i < $inputSize; $i++) {
             $char = $potentialJsonPath[$i];
 
             if ($char === self::TOKEN_STRING && !$inTheParentheses) {

@@ -41,7 +41,7 @@ class ReferenceNodeTest extends TestCase
 
         // Act
         ReferenceNode::traverseByNodePath(
-            static fn(ReferenceNode $node) => $node->remove(),
+            static fn (ReferenceNode $node) => $node->remove(),
             $structure,
             '[*].children[*].children[*].title'
         );
@@ -87,7 +87,7 @@ class ReferenceNodeTest extends TestCase
 
         // Act
         $mappedArray = ReferenceNode::mapByNodePath(
-            static fn(ReferenceNode $node) => $node->trunc(18),
+            static fn (ReferenceNode $node) => $node->trunc(18),
             $structure,
             '.items[*].description'
         );
@@ -117,7 +117,7 @@ class ReferenceNodeTest extends TestCase
 
         // Act
         $mappedArray = ReferenceNode::mapByNodePath(
-            static fn(ReferenceNode $node) => $node->modify(
+            static fn (ReferenceNode $node) => $node->modify(
                 str_replace(
                     'lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ut venenatis arcu',
                     'abc',

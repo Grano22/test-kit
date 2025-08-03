@@ -16,7 +16,7 @@ class CallSpyTest extends TestCase
     public function callsAreCollectedAndAssertedCorrectly(): void
     {
         // Arrange
-        $someClass = new class() extends Assert {
+        $someClass = new class () extends Assert {
             use CallSpy;
 
             public function someMethod(): void
@@ -32,9 +32,9 @@ class CallSpyTest extends TestCase
             $someClass->someMethod();
             $someClass->someMethod();
         } catch (AssertionFailedError $error) {
-            self::assertSame(
-                "[Grano22\TestKit\TestDoubles\CallSpy] Number of calls exceeded (3 of 2 allowed) in method someMethod and location PHPUnit\Framework\Assert@anonymous\0/mnt/d/projects/test-kit/tests/unit/TestDoubles/CallSpyTest.php:19\$b6",
-                $error->getMessage()
+            self::assertStringStartsWith(
+                "[Grano22\TestKit\TestDoubles\CallSpy] Number of calls exceeded (3 of 2 allowed) in method someMethod and location PHPUnit\Framework\Assert@anonymous",
+                str_replace("\0", '', $error->getMessage())
             );
         }
     }

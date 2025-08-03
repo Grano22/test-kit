@@ -8,3 +8,6 @@ parameters:
         -
             identifier: missingType.iterableValue
             path: tests/*
+        -
+            message: '#Offset ''class'' might not exist on array\{function: string, line\?: int, file\?: string, class\?: class-string, type\?: ''->''\|''::'', args\?: array<mixed>, object\?: object\}#'
+            path: tests/*

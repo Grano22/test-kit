@@ -5,8 +5,7 @@ grumphp:
     tasks:
         phpcsfixer2:
             config: .php-cs-fixer.dist.php
-#        phpstan:
-#            memory_limit: "-1"
-#       TODO: Enable when ready
+        phpstan:
+            memory_limit: "-1"
         phpunit:
             always_execute: true
